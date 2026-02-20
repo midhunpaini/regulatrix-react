@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import type { ReactElement } from "react";
 
-import Section from "./components/Section";
+import { EarlyAccessForm } from "@/features/early-access/EarlyAccessForm";
+import { Section } from "@/shared/ui/Section";
 
 const problems = [
   "ZATCA Phase 2 requires strict invoice schema and integration workflows.",
@@ -62,64 +63,21 @@ const trustItems = [
   "Works for agencies and multi-store merchants",
 ];
 
-const defaultForm = {
-  name: "",
-  email: "",
-  company: "",
-  website: "",
-  role: "merchant",
-};
-
-export default function App() {
-  const [formData, setFormData] = useState(defaultForm);
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
-
-  const apiBaseUrl = useMemo(
-    () => (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, ""),
-    []
-  );
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setLoading(true);
-    setSuccess("");
-    setError("");
-
-    try {
-      const response = await fetch(`${apiBaseUrl}/api/early-access`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload?.error ?? "Request failed");
-      }
-
-      setSuccess("Request received. Our team will contact you.");
-      setFormData(defaultForm);
-    } catch (submitError) {
-      setError(submitError.message || "Unable to submit request.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+export function AppShell(): ReactElement {
   return (
     <div className="min-h-screen bg-brand-bg text-slate-100">
       <header className="border-b border-slate-800/80">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
-          <span className="text-lg font-semibold tracking-wide text-white">Regulatrix</span>
+          <a href="#" className="inline-flex items-center" aria-label="Regulatrix home">
+            <img
+              src="/logo.png"
+              alt="Regulatrix"
+              className="h-12 w-auto"
+              width={767}
+              height={212}
+              loading="eager"
+            />
+          </a>
           <a
             href="#cta"
             className="rounded-md border border-brand-accent/40 bg-brand-accent/10 px-4 py-2 text-sm font-medium text-brand-accent transition hover:bg-brand-accent/20"
@@ -248,100 +206,7 @@ export default function App() {
           description="Submit your details and we will share onboarding options."
         >
           <div className="max-w-2xl rounded-2xl border border-slate-800 bg-brand-panel p-6">
-            <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-200">
-                  Name
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Your full name"
-                  className="w-full rounded-md border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 outline-none ring-brand-accent placeholder:text-slate-500 focus:ring-1"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-200">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="you@company.com"
-                  className="w-full rounded-md border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 outline-none ring-brand-accent placeholder:text-slate-500 focus:ring-1"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="company" className="mb-2 block text-sm font-medium text-slate-200">
-                  Company
-                </label>
-                <input
-                  id="company"
-                  name="company"
-                  type="text"
-                  required
-                  value={formData.company}
-                  onChange={handleChange}
-                  placeholder="Company name"
-                  className="w-full rounded-md border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 outline-none ring-brand-accent placeholder:text-slate-500 focus:ring-1"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="website" className="mb-2 block text-sm font-medium text-slate-200">
-                  Website
-                </label>
-                <input
-                  id="website"
-                  name="website"
-                  type="url"
-                  value={formData.website}
-                  onChange={handleChange}
-                  placeholder="https://"
-                  className="w-full rounded-md border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 outline-none ring-brand-accent placeholder:text-slate-500 focus:ring-1"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="role" className="mb-2 block text-sm font-medium text-slate-200">
-                  Role
-                </label>
-                <select
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className="w-full rounded-md border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 outline-none ring-brand-accent focus:ring-1"
-                >
-                  <option value="agency">Agency</option>
-                  <option value="merchant">Merchant</option>
-                </select>
-              </div>
-
-              <div className="sm:col-span-2">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full rounded-md bg-brand-accent px-5 py-3 text-sm font-semibold text-slate-900 shadow-soft transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {loading ? "Submitting..." : "Request Access"}
-                </button>
-              </div>
-
-              {success ? <p className="sm:col-span-2 text-sm text-emerald-400">{success}</p> : null}
-              {error ? <p className="sm:col-span-2 text-sm text-rose-400">{error}</p> : null}
-            </form>
-            <p className="mt-4 text-xs text-slate-500">Submitting to: {apiBaseUrl}/api/early-access</p>
+            <EarlyAccessForm />
           </div>
         </Section>
       </main>
