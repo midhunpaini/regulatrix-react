@@ -82,6 +82,14 @@ Nginx reference config is available at `deploy/nginx.conf` and includes:
 
 For non-Nginx platforms (Vercel, Netlify, CDN edge), apply equivalent headers and cache rules in platform config.
 
+## SEO
+
+- Canonical production domain: `https://regulatrix.tech`
+- Static SEO files:
+  - `public/robots.txt`
+  - `public/sitemap.xml`
+- Maintenance rule: whenever a new public route is added, add it to `public/sitemap.xml`.
+
 ## Quality Gates
 
 CI workflow (`.github/workflows/ci.yml`) enforces:
